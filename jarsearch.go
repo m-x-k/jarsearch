@@ -10,7 +10,8 @@ import (
 	"os"
 )
 
-var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=20&wt=json"
+var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=100&wt=json"
+var MakeRequest = makeRequest
 
 type Doc struct {
 	Id            string
@@ -76,7 +77,7 @@ func outputMavenResults(dependencies Dependencies) {
 }
 
 func search(url string) Dependencies {
-	body := makeRequest(url)
+	body := MakeRequest(url)
 	dependencies, err := parseDependencies([]byte(body))
 	if err != nil {
 		log.Fatal(err)

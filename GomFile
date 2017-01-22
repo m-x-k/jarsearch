@@ -1,0 +1,2 @@
+gom "github.com/urfave/cli"
+gom "github.com/stretchr/testify/assert"
