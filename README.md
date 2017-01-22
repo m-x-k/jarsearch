@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/m-x-k/jarsearch.svg?branch=master)](https://travis-ci.org/m-x-k/jarsearch)
+
 # Jar Search
 
 A simple Go command line application to allow maven central based searches for Jar files.
