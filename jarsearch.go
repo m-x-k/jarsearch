@@ -10,7 +10,8 @@ import (
 	"os"
 )
 
-var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=100&wt=json"
+var resultsLimit = 20
+var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=%d&wt=json"
 var MakeRequest = makeRequest
 
 type Doc struct {
@@ -87,14 +88,19 @@ func search(url string) Dependencies {
 
 var repositoryTypes = []string{"gradle", "maven"}
 
+func getFullUrl(searchText string) string {
+	fullUrl := fmt.Sprintf(mavenCentralUrl, searchText, resultsLimit)
+	return fullUrl
+}
+
 func GradleSearchAction(c *cli.Context) error {
 	searchText := c.Args().Get(0)
 	if searchText == "" {
 		log.Fatal("\nERROR: Missing gradle search text\n")
 		return nil
 	}
-	fullUrl := fmt.Sprintf(mavenCentralUrl, searchText)
-	result := search(fullUrl)
+
+	result := search(getFullUrl(searchText))
 	outputGradleResults(result)
 
 	return nil
@@ -106,8 +112,7 @@ func MavenSearchAction(c *cli.Context) error {
 		log.Fatal("\nERROR: Missing maven search text\n")
 		return nil
 	}
-	fullUrl := fmt.Sprintf(mavenCentralUrl, searchText)
-	result := search(fullUrl)
+	result := search(getFullUrl(searchText))
 	outputMavenResults(result)
 
 	return nil
