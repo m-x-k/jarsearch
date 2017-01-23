@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/urfave/cli"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 var resultsLimit = 20
 var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=%d&wt=json"
 var MakeRequest = makeRequest
+var out io.Writer = os.Stdout
 
 type Doc struct {
 	Id            string
@@ -34,7 +36,7 @@ func parseDependencies(body []byte) (Dependencies, error) {
 	var m Dependencies
 	err := json.Unmarshal(body, &m)
 	if err != nil {
-		fmt.Println("Parse error: ", err)
+		fmt.Fprint(out, "Parse error: ", err)
 	}
 	return m, err
 }
@@ -57,7 +59,7 @@ func outputGradleResults(dependencies Dependencies) {
 	docs := dependencies.Response.Docs
 	for i := range docs {
 		line := fmt.Sprintf("%s:%s", docs[i].Id, docs[i].LatestVersion)
-		fmt.Println(line)
+		fmt.Fprintln(out, line)
 	}
 }
 
@@ -68,12 +70,12 @@ func outputMavenResults(dependencies Dependencies) {
 		artifactId := fmt.Sprintf("<artifactId>%s</artifactId>", docs[i].A)
 		version := fmt.Sprintf("<version>%s</version>", docs[i].LatestVersion)
 
-		fmt.Println("")
-		fmt.Println("<dependency>")
-		fmt.Println(groupId)
-		fmt.Println(artifactId)
-		fmt.Println(version)
-		fmt.Println("</dependency>")
+		fmt.Fprintln(out, "")
+		fmt.Fprintln(out, "<dependency>")
+		fmt.Fprintln(out, groupId)
+		fmt.Fprintln(out, artifactId)
+		fmt.Fprintln(out, version)
+		fmt.Fprintln(out, "</dependency>")
 	}
 }
 
