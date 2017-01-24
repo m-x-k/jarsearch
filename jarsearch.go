@@ -16,6 +16,10 @@ var mavenCentralUrl = "http://search.maven.org/solrsearch/select?q=%s&rows=%d&wt
 var MakeRequest = makeRequest
 var out io.Writer = os.Stdout
 
+type Spellcheck struct {
+	Suggestions []interface{}
+}
+
 type Doc struct {
 	Id            string
 	A             string
@@ -24,12 +28,13 @@ type Doc struct {
 }
 
 type Response struct {
-	NumFound int64
+	NumFound int
 	Docs     []Doc
 }
 
 type Dependencies struct {
-	Response Response
+	Response   Response
+	Spellcheck Spellcheck
 }
 
 func parseDependencies(body []byte) (Dependencies, error) {
@@ -55,12 +60,25 @@ func makeRequest(url string) string {
 	return string(body)
 }
 
+func outputResultsFound(dependencies Dependencies) {
+	fmt.Fprintln(out, "")
+	resultsFound := fmt.Sprintf("Results found: %d", dependencies.Response.NumFound)
+	fmt.Fprintln(out, resultsFound)
+}
+
+func outputSpellCheckSuggestions(dependencies Dependencies) {
+	suggestions := dependencies.Spellcheck.Suggestions[1]
+	fmt.Println(suggestions)
+}
+
 func outputGradleResults(dependencies Dependencies) {
 	docs := dependencies.Response.Docs
 	for i := range docs {
 		line := fmt.Sprintf("%s:%s", docs[i].Id, docs[i].LatestVersion)
 		fmt.Fprintln(out, line)
 	}
+
+	outputResultsFound(dependencies)
 }
 
 func outputMavenResults(dependencies Dependencies) {
@@ -77,6 +95,8 @@ func outputMavenResults(dependencies Dependencies) {
 		fmt.Fprintln(out, version)
 		fmt.Fprintln(out, "</dependency>")
 	}
+
+	outputResultsFound(dependencies)
 }
 
 func search(url string) Dependencies {

@@ -33,7 +33,7 @@ func TestOutputMavenResults(t *testing.T) {
 	outputMavenResults(dependencies)
 
 	actualResult := out.(*bytes.Buffer).String()
-	expectedResult := "\n<dependency>\n<groupId>groupIdX</groupId>\n<artifactId>artifactIdX</artifactId>\n<version>1.0.0</version>\n</dependency>\n"
+	expectedResult := "\n<dependency>\n<groupId>groupIdX</groupId>\n<artifactId>artifactIdX</artifactId>\n<version>1.0.0</version>\n</dependency>\n\nResults found: 0\n"
 	assert.Equal(t, expectedResult, actualResult, "Maven output not as expected")
 }
 
@@ -50,6 +50,6 @@ func TestOutputGradleResults(t *testing.T) {
 	outputGradleResults(dependencies)
 
 	actualResult := out.(*bytes.Buffer).String()
-	expectedResult := "groupIdX:artifactIdX:1.0.0\n"
+	expectedResult := "groupIdX:artifactIdX:1.0.0\n\nResults found: 0\n"
 	assert.Equal(t, expectedResult, actualResult, "Gradle output not as expected")
 }
