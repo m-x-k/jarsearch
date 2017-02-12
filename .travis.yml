@@ -1,7 +1,15 @@
 language: go
+
 go:
+  - 1.7
   - tip
+
 before_install:
   - go get github.com/mattn/gom
+  - go get -t -v ./...
+
 script:
-  - $HOME/gopath/bin/gom test
+  - gom test -race -coverprofile=coverage.txt -covermode=atomic
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
